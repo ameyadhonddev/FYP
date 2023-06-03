@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="http://unpkg.com/leaflet-sidebar-v2"></script>
+
+    <style>
+      *{
+        box-sizing: border-box;
+        -webkit-font-smoothing: antialiased;
+        padding: 0;
+        margin: 0;
+      }
+
+      .container{
+        width: 1200px;
+        display: flex;
+      }
+
+      #mapid {
+        height: 100vh;
+        width: 75vw;
+      }
+
+      .org_list{
+        height: 100vh;
+        width: 25vw;  
+      }
+    </style>
+    {% comment %}
+    <link rel="stylesheet" href="./style.css" />
+    {% endcomment %}
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#"
+              >Home <span class="sr-only">(current)</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Dropdown
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="#">Action</a>
+              <a class="dropdown-item" href="#">Another action</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link disabled"
+              href="#"
+              tabindex="-1"
+              aria-disabled="true"
+              >Disabled</a
+            >
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <input
+            class="form-control mr-sm-2"
+            type="search"
+            placeholder="Search"
+            aria-label="Search"
+          />
+          <button class="btn btn-outline-success my-2 my-sm-1" type="submit">
+            Search
+          </button>
+          <a
+            href="{% url 'logout' %}"
+            class="btn btn-outline-danger my-2 my-sm-1"
+            type="submit"
+          >
+            Logout
+          </a>
+        </form>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="org_list">
+        <div class="heading">
+          Organisations
+        </div>
+        <div class="fields">
+          <select class="form-control form-control-sm">
+            <option>Select organisation</option>
+          </select>
+          <select class="form-control form-control-sm">
+            <option>Select project</option>
+          </select>
+          <select class="form-control form-control-sm">
+            <option>Select Dataset</option>
+          </select>
+        </div>
+      </div>
+      <div id="mapid"></div>
+        
+
+      
+    </div>
+    
+
+    <script>
+          var mymap = L.map('mapid')
+          mymap.setView([21, 78], 5);
+          const stadiaMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          }).addTo(mymap);
+
+              
+
+        // Draw point markers
+        {% comment %} mymap.on('click', function(e){
+          console.log(e.latlng);
+          L.marker(e.latlng, {
+              title: 'New Place',
+              opacity: 0.7
+          }).addTo(mymap)
+      }) {% endcomment %}
+
+        // Draw Polylines
+        
+        {% comment %} 
+        drawPolyline = L.polyline([], {color: 'black'}).addTo(mymap)
+              mymap.on('click', function(e){
+              let latlng = e.latlng;
+              drawPolyline.addLatLng(latlng)
+              })
+        masterPolyline = L.polyline([], {color: 'brown'}).addTo(mymap)
+        var masterLineCoordinates = []
+
+        mymap.on('dblclick', function(e){
+            let allclickedcoordinates = drawPolyline.getLatLngs()
+            //console.log(allclickedcoordinates);
+            let exceptLastTwo = allclickedcoordinates.slice(0, allclickedcoordinates.length - 1)
+            console.log(exceptLastTwo);
+
+            masterLineCoordinates.push(exceptLastTwo)
+            masterPolyline.setLatLngs(masterLineCoordinates)
+            drawPolyline.setLatLngs([])
+
+            console.log(masterPolyline.toGeoJSON());
+        }) {% endcomment %}
+              {% comment %} var marker = L.marker([51.2, 7]).addTo(mymap); {% endcomment %}
+
+    
+    {% comment %} var drawPolygon = L.polygon([], {color: 'black'}).addTo(mymap);
+
+    
+    function DrawPolygon(){
+        mymap.on('click', function(e){
+            let latlng = e.latlng;
+            drawPolygon.addLatLng(latlng)
+        })
+    }
+
+    masterPolygon = L.polygon([], {color: 'brown'}).addTo(mymap)
+    var masterPolygonCoordinates = []
+
+    mymap.on('dblclick', function(e){
+        let allclickedcoordinates = drawPolygon.getLatLngs()
+        let exceptLastTwo = allclickedcoordinates[0].slice(0, allclickedcoordinates[0].length - 1)
+        console.log(exceptLastTwo);
+        
+        masterPolygonCoordinates.push(exceptLastTwo)
+        masterPolygon.setLatLngs(masterPolygonCoordinates)
+        drawPolygon.setLatLngs([])
+        console.log(masterPolygon.toGeoJSON());
+        /*console.log(allclickedcoordinates);*/
+
+        mymap.off('click')
+
+        let drawPolygonBtnElem = document.querySelector('.draw-polygon')
+        if(drawPolygonBtnElem){
+            L.DomUtil.removeClass(drawPolygonBtnElem, 'draw-active')
+        }
+    })
+
+    // Custom geometry plugin
+    L.Control.CustomDrawGeometryTools = L.Control.extend({
+        onAdd: function(mymap){
+            var div = L.DomUtil.create('button', 'draw-polygon');
+            div.innerHTML = 'Draw a polygon'
+
+            L.DomEvent.on(div, 'click', function(e){
+                L.DomEvent.stopPropagation(e);
+                let toggleDrawPolygonButton = div.classList.toggle('draw-active')
+                if (toggleDrawPolygonButton){
+                    console.log(toggleDrawPolygonButton);
+                    DrawPolygon()
+                }
+            })
+            return div
+        }
+    })
+
+    L.control.customdrawgeometrytools = function(opts){
+        return new L.Control.CustomDrawGeometryTools(opts)
+    }
+
+    L.control.customdrawgeometrytools({position: 'topleft'}).addTo(mymap) {% endcomment %}
+
+
+        
+            /* add a new panel */
+            {% comment %} var sidebar = L.control.sidebar('sidebar').addTo(mymap);
+
+          console.log(sidebar.show) {% endcomment %}
+
+          {% comment %} mymap.addControl(sidebar); {% endcomment %}
+          {% comment %} setTimeout(function(){
+            sidebar.toggle();
+          }, 500)
+
+          setInterval(function(){
+            sidebar.toggle();
+          }, 5000) {% endcomment %}
+          // Show sidebar
+          {% comment %} sidebar.show();
+
+          // Hide sidebar
+          sidebar.hide();
+
+          // Toggle sidebar visibility
+          sidebar.toggle(); {% endcomment %}
+
+          // Check sidebar visibility
+          {% comment %} var visible = sidebar.isVisible();
+          setTimeout(function () {
+            sidebar.show();
+          }, 500);
+          sidebar.setContent('test <b>test</b> test');
+          var sidebar = L.control.sidebar('sidebar', {
+                position: 'left'
+              });
+
+            map.addControl(sidebar); {% endcomment %}
+
+            // Show sidebar
+          {% comment %} sidebar.show();
+
+          // Hide sidebar
+          sidebar.hide();
+
+          // Toggle sidebar visibility
+          sidebar.toggle();
+
+          // Check sidebar visibility
+          var visible = sidebar.isVisible(); {% endcomment %}
+          {% comment %} setTimeout(function () {
+            sidebar.show();
+          }, 500);
+          sidebar.setContent('test <b>test</b> test'); {% endcomment %}
+                {% comment %} window.onload = init;
+
+          function init(){
+
+              const mapElem = document.getElementById('mapid')
+
+              const stadiaMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              })
+
+              const SmoothDark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+                  maxZoom: 20,
+                  attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+              });
+              const mymap = L.map(mapElem,{
+                  center: [0, 0],
+                  zoom: 5,
+                  minZoom: 4,
+                  layers: [stadiaMaps]
+                  /*layers: [
+                      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      })
+                  ]*/
+              })
+
+              const baselayers = {
+                  'Smoothdark': SmoothDark,
+                  '<b>stadiaMaps</b>': stadiaMaps
+              }
+
+              const layerControls = L.control.layers(baselayers, {}, {
+                  position: 'topleft'
+              }).addTo(mymap)
+
+               {% endcomment %}
+
+
+          {% comment %} } {% endcomment %}
+    </script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

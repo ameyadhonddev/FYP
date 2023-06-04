@@ -22,6 +22,7 @@ urlpatterns = [
     path('', views.SignupPage, name = 'signup'),
     path('login/', views.LoginPage, name = 'login'),
     path('home/', views.Homepage, name = 'home'),
-    path('logout/', views.LogoutPage, name = 'logout')
-    
+    path('logout/', views.LogoutPage, name = 'logout'),
+    path('advanced_search/', views.AdvSearch, name = 'advanced_search'),
+    path('getDataset', views.getDataset, name='getDataset')
 ]

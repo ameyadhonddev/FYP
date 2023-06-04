@@ -2,6 +2,9 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.db import connection
+from django.http import JsonResponse 
+
 # Create your views here.
 @login_required(login_url='login')
 
@@ -45,3 +48,25 @@ def LoginPage(request):
 def LogoutPage(request):
     logout(request)
     return redirect('login')
+
+def AdvSearch(request):
+    #my_custom_sql()
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM organization;")
+        row = cursor.fetchall()
+    #print(type(row))
+    data = {"org": row}
+
+    return render(request, 'advanced_search.html', data)
+
+def my_custom_sql(query):
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        row = cursor.fetchone()
+        print(row)
+
+    return row
+
+def getDataset(request):
+    print("request")
+    return JsonResponse(request)
